@@ -1,4 +1,4 @@
- window.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
     let tab = document.querySelectorAll('.info-header-tab'),
@@ -145,47 +145,51 @@
         }
     });
 
-});
+    let slideIndex = 1,
+        slides = document.querySelectorAll('.slider-item'),
+        prev = document.querySelector('.prev'),
+        next = document.querySelector('.next'),
+        dotsWrap = document.querySelector('.slider-dots'),
+        dots = document.querySelectorAll('.dot');
 
-class Options {
-	constructor(height, width, bg, fontSize, textAlign) {
-		this.height = height;
-		this.width = width;
-		this.bg = bg;
-		this.fontSize = fontSize;
-		this.textAlign = textAlign;
-	}
+    showSlides(slideIndex);
 
-	createDiv() {
-		let elem = document.createElement('div');
-		document.body.appendChild(elem);
-		let param = `height:${this.height}px; width:${this.width}px; background-color:${this.bg}; font-size:${this.fontSize}px; text-align:${this.textAlign}`;
-		elem.style.cssText = param;
-	}
-}
+    function showSlides(n) {
 
-const item = new Options(300, 350, "red", 14, "center");
-
-item.createDiv();
-
-let inputRub = document.getElementById('rub'),
-    inputUsd = document.getElementById('usd');
-
-inputRub.addEventListener('input', () => {
-    let request = new XMLHttpRequest();
-
-    request.open('GET', 'js/current.json');
-    request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-    request.send();
-    
-    request.addEventListener('readystatechange', function() {
-        if (request.readyState === 4 && request.status == 200) {
-            let data = JSON.parse(request.response);
-
-            inputUsd.value = inputRub.value / data.usd;
-        } else {
-            inputUsd.value = "Что-то пошло не так!";
+        if (n > slides.length) {
+            slideIndex = 1;
         }
+        if(n < 1) {
+            slideIndex = slides.length;
+        }
+
+        slides.forEach((item) => item.style.display = 'none');
+        dots.forEach((item) => item.classList.remove('dot-active'));
+        slides[slideIndex - 1].style.display = 'block';
+        dots[slideIndex - 1].classList.add('dot-active');
+    }
+
+    function plusSlides(n) {
+        showSlides(slideIndex += n);
+    }
+    function currentSlide(n) {
+        showSlides(slideIndex = n);
+    }
+
+    prev.addEventListener('click', function() {
+        plusSlides(-1);
     });
 
+    next.addEventListener('click', function() {
+        plusSlides(1);
+    });
+
+    dotsWrap.addEventListener('click', function(e){
+        for (let i = 0; i < dots.length + 1; i++) {
+            if (e.target.classList.contains('dot') && e.target == dots[i - 1]) {
+                currentSlide(i);
+            }
+        }
+    });
 });
+
